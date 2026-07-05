@@ -11,6 +11,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4.1" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
     <PackageReference Include="NuciXNA.Graphics" Version="2.2.4" />
+    <PackageReference Include="NuciXNA.Gui" Version="3.4.0" />
     <PackageReference Include="NuciXNA.Input" Version="2.1.0" />
     <PackageReference Include="NuciXNA.Primitives" Version="2.1.7" />
   </ItemGroup>

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NuciXNA.DataAccess.Content;
 using NuciXNA.Graphics;
+using NuciXNA.Gui.Screens;
 using NuciXNA.Input;
 using WalnutDrop.Screens;
 
@@ -11,16 +12,16 @@ namespace WalnutDrop
     {
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private readonly GameplayScreen _screen;
 
         public GameRoot()
         {
-            _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 720;
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1280,
+                PreferredBackBufferHeight = 720
+            };
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _screen = new GameplayScreen();
         }
 
         protected override void Initialize()
@@ -36,22 +37,21 @@ namespace WalnutDrop
             GraphicsManager.Instance.Graphics = _graphics;
             GraphicsManager.Instance.SpriteBatch = _spriteBatch;
 
-            _screen.LoadContent(GraphicsDevice);
+            ScreenManager.Instance.StartingScreenType = typeof(GameplayScreen);
+            ScreenManager.Instance.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
             InputManager.Instance.Update(Window);
-            _screen.Update(gameTime);
+            ScreenManager.Instance.Update(gameTime);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(new Color(15, 15, 35));
-
-            _spriteBatch.Begin();
-            _screen.Draw(_spriteBatch);
+            _spriteBatch.Begin(samplerState: SamplerState.AnisotropicClamp);
+            ScreenManager.Instance.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);

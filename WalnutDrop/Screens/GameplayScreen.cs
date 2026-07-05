@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NuciXNA.Graphics.Drawing;
+using NuciXNA.Graphics;
+using NuciXNA.Gui;
+using NuciXNA.Gui.Controls;
+using NuciXNA.Gui.Screens;
 using NuciXNA.Input;
 using NuciXNA.Primitives;
 using WalnutDrop.Model;
@@ -10,7 +14,7 @@ using ModelPlayerIndex = WalnutDrop.Model.PlayerIndex;
 
 namespace WalnutDrop.Screens
 {
-    internal sealed class GameplayScreen
+    internal sealed class GameplayScreen : Screen
     {
         // Board layout constants
         private const int BoardX = 360;
@@ -38,8 +42,11 @@ namespace WalnutDrop.Screens
         private static readonly Color ColourRoundComplete = new Color(220, 180, 50);
         private static readonly Color ColourGameOver      = new Color(220, 80,  50);
 
+        private const int WalnutDisplaySize = 40;
+
         private readonly GameState _gameState;
         private Texture2D _pixel;
+        private GuiImage _walnutSprite;
         private SpriteFont _font;
 
         private TextSprite _roundLabel;
@@ -64,12 +71,22 @@ namespace WalnutDrop.Screens
             _hoveredColumn = -1;
             _mousePosition = new Point2D(0, 0);
             _lastDropResults = new List<CoinDropResult>();
+
+            BackgroundColour = new Colour(15, 15, 35);
         }
 
-        public void LoadContent(GraphicsDevice graphicsDevice)
+        protected override void DoLoadContent()
         {
-            _pixel = new Texture2D(graphicsDevice, 1, 1);
+            _pixel = new Texture2D(GraphicsManager.Instance.Graphics.GraphicsDevice, 1, 1);
             _pixel.SetData(new Color[] { Color.White });
+
+            _walnutSprite = new GuiImage
+            {
+                ContentFile = "board/walnut",
+                Size = new Size2D(WalnutDisplaySize, WalnutDisplaySize)
+            };
+
+            GuiManager.Instance.RegisterControls(_walnutSprite);
 
             _font = NuciXNA.DataAccess.Content.NuciContentManager.Instance.LoadSpriteFont("Fonts/Default");
 
@@ -94,7 +111,13 @@ namespace WalnutDrop.Screens
             UpdateLabels();
         }
 
-        public void Update(GameTime gameTime)
+        protected override void DoUnloadContent()
+        {
+            InputManager.Instance.MouseButtonPressed -= OnMouseButtonPressed;
+            InputManager.Instance.MouseMoved -= OnMouseMoved;
+        }
+
+        protected override void DoUpdate(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _gameState.Update(deltaTime);
@@ -116,7 +139,7 @@ namespace WalnutDrop.Screens
             _statusLabel.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        protected override void DoDraw(SpriteBatch spriteBatch)
         {
             DrawBoard(spriteBatch);
             DrawHud(spriteBatch);
@@ -371,15 +394,17 @@ namespace WalnutDrop.Screens
 
         private void DrawCoinAt(SpriteBatch sb, int x, int y, int coinCount)
         {
-            int size = 20;
-            DrawRect(sb, x, y, size, size, ColourCoin);
+            int drawX = x - WalnutDisplaySize / 2 + 10;
+            int drawY = y - WalnutDisplaySize / 2 + 10;
+            _walnutSprite.Location = new Point2D(drawX, drawY);
+            _walnutSprite.Draw(sb);
 
             if (coinCount > 1)
             {
                 string countText = coinCount.ToString();
                 Vector2 textSize = _font.MeasureString(countText);
-                float tx = x + (size - textSize.X) / 2f;
-                float ty = y + (size - textSize.Y) / 2f;
+                float tx = drawX + (WalnutDisplaySize - textSize.X) / 2f;
+                float ty = drawY + (WalnutDisplaySize - textSize.Y) / 2f;
                 sb.DrawString(_font, countText, new Vector2(tx, ty), Color.Black);
             }
         }
