@@ -7,10 +7,8 @@ namespace WalnutDrop
     {
         private static void Main(string[] args)
         {
-            using (GameRoot game = new GameRoot())
-            {
-                game.Run();
-            }
+            using GameRoot game = new();
+            game.Run();
         }
     }
 }

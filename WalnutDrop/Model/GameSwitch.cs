@@ -1,11 +1,14 @@
 namespace WalnutDrop.Model
 {
-    public sealed class GameSwitch
+    public sealed class GameSwitch(
+        int leftColumn,
+        int rightColumn,
+        SwitchSide initialPadSide)
     {
-        public int LeftColumn { get; }
-        public int RightColumn { get; }
-        public SwitchSide PadSide { get; private set; }
-        public int PadCoinCount { get; set; }
+        public int LeftColumn { get; } = leftColumn;
+        public int RightColumn { get; } = rightColumn;
+        public SwitchSide PadSide { get; private set; } = initialPadSide;
+        public int PadCoinCount { get; set; } = 0;
 
         public int PadColumn
         {
@@ -31,14 +34,6 @@ namespace WalnutDrop.Model
 
                 return LeftColumn;
             }
-        }
-
-        public GameSwitch(int leftColumn, int rightColumn, SwitchSide initialPadSide)
-        {
-            LeftColumn = leftColumn;
-            RightColumn = rightColumn;
-            PadSide = initialPadSide;
-            PadCoinCount = 0;
         }
 
         public bool IsPadColumn(int column) => column.Equals(PadColumn);

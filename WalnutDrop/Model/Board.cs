@@ -15,7 +15,7 @@ namespace WalnutDrop.Model
         public Board()
         {
             _switchGrid = new GameSwitch[SwitchRowCount, Columns];
-            _allSwitches = new List<GameSwitch>();
+            _allSwitches = [];
             _random = new Random();
             InitializeSwitches();
         }
@@ -37,8 +37,8 @@ namespace WalnutDrop.Model
 
         public List<CoinDropResult> DropCoin(int startColumn)
         {
-            List<CoinDropResult> results = new List<CoinDropResult>();
-            Queue<PendingCoin> pending = new Queue<PendingCoin>();
+            List<CoinDropResult> results = [];
+            Queue<PendingCoin> pending = new();
             pending.Enqueue(new PendingCoin(startColumn, 1, 0));
 
             while (pending.Count > 0)
@@ -56,6 +56,46 @@ namespace WalnutDrop.Model
             {
                 sw.PadCoinCount = 0;
             }
+        }
+
+        public IEnumerable<(int column, int row)> TracePrimaryPath(int startColumn)
+        {
+            List<(int column, int row)> path = [];
+            int column = startColumn;
+
+            path.Add((column, -1));
+
+            for (int row = 0; row < SwitchRowCount; row++)
+            {
+                GameSwitch sw = _switchGrid[row, column];
+
+                if (sw is null)
+                {
+                    continue;
+                }
+
+                if (sw.IsPadColumn(column))
+                {
+                    if (sw.PadCoinCount.Equals(0))
+                    {
+                        path.Add((column, row));
+                        return path;
+                    }
+
+                    path.Add((column, row));
+                    column = sw.LeverColumn;
+                    path.Add((column, row));
+                }
+                else
+                {
+                    path.Add((column, row));
+                    column = sw.PadColumn;
+                    path.Add((column, row));
+                }
+            }
+
+            path.Add((column, SwitchRowCount));
+            return path;
         }
 
         private void InitializeSwitches()
@@ -86,7 +126,7 @@ namespace WalnutDrop.Model
                         side = SwitchSide.Right;
                     }
 
-                    GameSwitch sw = new GameSwitch(col, col + 1, side);
+                    GameSwitch sw = new(col, col + 1, side);
                     _allSwitches.Add(sw);
                     _switchGrid[row, col] = sw;
                     _switchGrid[row, col + 1] = sw;

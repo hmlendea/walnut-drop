@@ -11,6 +11,8 @@ namespace WalnutDrop.Model
         private readonly Random _random;
         private float _roundCompleteTimer;
 
+        public event Action<int> CoinDropped;
+
         public Player Player1 { get; }
         public Player Player2 { get; }
         public Board Board { get; }
@@ -81,8 +83,10 @@ namespace WalnutDrop.Model
         {
             if (!Phase.Equals(GamePhase.Playing))
             {
-                return new List<CoinDropResult>();
+                return [];
             }
+
+            CoinDropped?.Invoke(column);
 
             List<CoinDropResult> results = Board.DropCoin(column);
 
@@ -94,6 +98,7 @@ namespace WalnutDrop.Model
             }
 
             CurrentPlayer.AddScore(scored);
+
             AfterDrop();
 
             return results;

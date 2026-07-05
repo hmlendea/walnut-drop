@@ -1,14 +1,10 @@
 namespace WalnutDrop.Model
 {
-    public sealed class CoinDropResult
+    public sealed class CoinDropResult(
+        int finalColumn,
+        int coinCount)
     {
-        public int FinalColumn { get; }
-        public int CoinCount { get; }
-
-        public CoinDropResult(int finalColumn, int coinCount)
-        {
-            FinalColumn = finalColumn;
-            CoinCount = coinCount;
-        }
+        public int FinalColumn { get; } = finalColumn;
+        public int CoinCount { get; } = coinCount;
     }
 }
