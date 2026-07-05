@@ -1,4 +1,5 @@
 ﻿using System;
+using WalnutDrop;
 
 namespace WalnutDrop
 {
@@ -6,7 +7,10 @@ namespace WalnutDrop
     {
         private static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            using (GameRoot game = new GameRoot())
+            {
+                game.Run();
+            }
         }
     }
 }
